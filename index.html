@@ -61,40 +61,40 @@
     }
   </style>
   <script>
-    const translations = {
-      'perfil nfc elias': 'Perfil NFC Elías',
-      'real estate agent nfc design': 'Diseño NFC para agente inmobiliario',
-      'entertainment nfc design': 'Diseño NFC para entretenimiento',
-      'bubo images': 'Imágenes de Bubo',
-      'quick pricing tool': 'Herramienta de precios rápida',
-      'book some maintenance': 'Agendar mantenimiento',
-      'book a barber': 'Reservar barbería',
-      'create your party': 'Crea tu fiesta',
-      'play & go – app preview': 'Play & Go – Vista previa de la app',
-      'close events – landing': 'Eventos CLOSE – Página principal',
-      'submit business bots enquires': 'Enviar consultas a Business Bots'
-    };
+  const translations = {
+    'perfil nfc elias': 'Perfil NFC Elías',
+    'real estate agent nfc design': 'Diseño NFC para agente inmobiliario',
+    'entertainment nfc design': 'Diseño NFC para entretenimiento',
+    'bubo images': 'Imágenes de Bubo',
+    'quick pricing tool': 'Herramienta de precios rápida',
+    'book some maintenance': 'Agendar mantenimiento',
+    'book a barber': 'Reservar barbería',
+    'create your party': 'Crea tu fiesta',
+    'play & go – app preview': 'Play & Go – Vista previa de la app',
+    'close events – landing': 'Eventos CLOSE – Página principal',
+    'submit business bots enquires': 'Enviar consultas a Business Bots'
+  };
 
-    const originalTexts = {};
+  const originalTexts = new Map();
 
-    function translateToSpanish() {
-      document.querySelectorAll('.link-title').forEach(el => {
-        const original = el.textContent.trim().toLowerCase();
-        originalTexts[el] = el.textContent;
-        if (translations[original]) {
-          el.textContent = translations[original];
-        }
-      });
-    }
+  function translateToSpanish() {
+    document.querySelectorAll('.link-title').forEach(el => {
+      const key = el.textContent.trim().toLowerCase();
+      if (!originalTexts.has(el)) {
+        originalTexts.set(el, el.textContent);
+      }
+      if (translations[key]) {
+        el.textContent = translations[key];
+      }
+    });
+  }
 
-    function translateToEnglish() {
-      document.querySelectorAll('.link-title').forEach(el => {
-        if (originalTexts[el]) {
-          el.textContent = originalTexts[el];
-        }
-      });
-    }
-  </script>
+  function translateToEnglish() {
+    originalTexts.forEach((value, el) => {
+      el.textContent = value;
+    });
+  }
+</script>
 </head>
 <body>
   <h1>Business Bots – Links</h1>
