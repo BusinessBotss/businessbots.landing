@@ -3,135 +3,109 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="Business Bots – Links to NFC profiles, booking tools, event platforms and more." />
   <title>Business Bots – Links</title>
 
-  <!-- Estilos mínimos ------------------------------------------------------->
+  <!-- Google Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@100;400&display=swap" rel="stylesheet" />
+
+  <!-- —— Estilos —— -->
   <style>
     :root{
-      --bg:#111;--fg:#fff;--block:#1a1a1a;--hover:#333;--accent:#007bff;
+      --bg:#111;--fg:#fff;--card:#1a1a1a;--hover:#333;--accent:#007bff;--error:#ff4d4d
     }
-    *{box-sizing:border-box;font-family:Montserrat,Arial,sans-serif}
-    body{margin:0;padding:2rem;background:var(--bg);color:var(--fg);min-height:100vh}
-    h1{font-weight:100;font-size:2.2rem;margin:0 0 1.5rem;text-align:center}
-    /* Botones de idioma */
-    .lang-btn{border:none;border-radius:6px;padding:.8rem 1.4rem;margin:0 .4rem;
-      background:var(--block);color:var(--fg);cursor:pointer;font-size:1rem;
-      transition:background .25s,transform .1s}
-    .lang-btn:not(.active):hover{background:var(--hover);transform:scale(1.05)}
-    .lang-btn.active{background:var(--accent)}
-    /* Bloques de enlaces */
-    .links a{display:block;background:var(--block);padding:1.4rem;border-radius:10px;
-      margin-bottom:1rem;text-decoration:none;color:inherit;
-      transition:transform .2s,box-shadow .2s;
-      box-shadow:0 4px 12px rgba(0,0,0,.6)}
+    *{box-sizing:border-box;font-family:'Montserrat',sans-serif}
+    body{margin:0;background:var(--bg);color:var(--fg);min-height:100vh;padding:2rem}
+    h1{text-align:center;font-weight:100;font-size:2.2rem;margin:0 0 1.5rem}
+    /* botones idioma */
+    .langs{display:flex;justify-content:center;gap:.6rem;margin-bottom:1.5rem}
+    .langs button{
+      all:unset;cursor:pointer;padding:.8rem 1.5rem;border-radius:6px;
+      background:var(--card);transition:.25s;font-size:1rem}
+    .langs button.active{background:var(--accent);}
+    .langs button:not(.active):hover{background:var(--hover);transform:scale(1.05)}
+    /* tarjetas de enlace */
+    .links a{display:block;text-decoration:none;color:inherit;
+      background:var(--card);border-radius:10px;padding:1.5rem;margin-bottom:1.5rem;
+      box-shadow:0 4px 12px rgba(0,0,0,.6);transition:.2s}
     .links a:hover{transform:translateY(-3px);box-shadow:0 8px 20px rgba(0,0,0,.8)}
-    .link-title{font-size:1.3rem;font-weight:400;margin:0}
+    .title{margin:0;font-size:1.4rem;font-weight:400}
     @media(max-width:600px){
-      body{padding:1rem}h1{font-size:1.8rem}.link-title{font-size:1.1rem}
-      .lang-btn{padding:.6rem 1rem;font-size:.9rem}
+      body{padding:1rem}h1{font-size:1.8rem}.title{font-size:1.2rem}
+      .langs button{padding:.6rem 1rem;font-size:.9rem}
     }
   </style>
 </head>
 <body>
   <h1>Business Bots – Links</h1>
 
-  <!-- Controles de idioma -->
-  <div class="translate-controls" role="group" aria-label="Language selection">
-    <button class="lang-btn active" data-lang="en">English</button>
-    <button class="lang-btn"         data-lang="es">Español</button>
-    <button class="lang-btn"         data-lang="de">Deutsch</button>
+  <!-- Selector de idioma -->
+  <div class="langs" role="group" aria-label="Language selection">
+    <button class="active" data-lang="en">English</button>
+    <button data-lang="es">Español</button>
+    <button data-lang="de">Deutsch</button>
   </div>
 
-  <!-- Enlaces -->
+  <!-- Contenedor de enlaces -->
   <div class="links" aria-live="polite"></div>
 
-  <!-- Lógica ---------------------------------------------------------------->
+  <!-- —— Lógica —— -->
   <script>
-    /* Tabla de traducciones: claves = id interno del enlace */
-    const T = {
-      en:{
-        nfc:'Perfil NFC Elias',
-        real:'Real Estate Agent NFC Design',
-        ent:'Entertainment NFC Design',
-        bubo:'Bubo Images',
-        price:'Quick Pricing Tool',
-        maint:'Book Some Maintenance',
-        barber:'Book a Barber',
-        party:'Create Your Party',
-        play:'Play & Go – App Preview',
-        close:'Close Events – Landing',
-        ticket:'Submit Business Bots Enquiries'
-      },
-      es:{
-        nfc:'Perfil NFC Elías',
-        real:'Diseño NFC para Agente Inmobiliario',
-        ent:'Diseño NFC para Entretenimiento',
-        bubo:'Imágenes de Bubo',
-        price:'Herramienta de Precios Rápida',
-        maint:'Agendar Mantenimiento',
-        barber:'Reservar Barbería',
-        party:'Crea tu Fiesta',
-        play:'Play & Go – Vista Previa de la App',
-        close:'Eventos CLOSE – Página Principal',
-        ticket:'Enviar Consultas a Business Bots'
-      },
-      de:{
-        nfc:'NFC-Profil Elías',
-        real:'NFC-Design für Immobilienmakler',
-        ent:'NFC-Design für Unterhaltung',
-        bubo:'Bubo-Bilder',
-        price:'Schnelles Preistool',
-        maint:'Wartung buchen',
-        barber:'Friseur buchen',
-        party:'Deine Party erstellen',
-        play:'Play & Go – App-Vorschau',
-        close:'CLOSE Events – Landingpage',
-        ticket:'Anfragen an Business Bots senden'
-      }
+    /* Diccionario */
+    const TXT = {
+      nfc  :{en:'Perfil NFC Elias', es:'Perfil NFC Elías', de:'NFC-Profil Elías'},
+      real :{en:'Real Estate Agent NFC Design', es:'Diseño NFC Agente Inmobiliario', de:'NFC-Design Immobilien­makler'},
+      ent  :{en:'Entertainment NFC Design', es:'Diseño NFC Entretenimiento', de:'NFC-Design Unterhaltung'},
+      bubo :{en:'Bubo Images', es:'Imágenes de Bubo', de:'Bubo-Bilder'},
+      price:{en:'Quick Pricing Tool', es:'Herramienta de Precios', de:'Schnelles Preis-Tool'},
+      maint:{en:'Book Some Maintenance', es:'Agendar Mantenimiento', de:'Wartung Buchen'},
+      barber:{en:'Book a Barber', es:'Reservar Barbería', de:'Friseur Buchen'},
+      party:{en:'Create Your Party', es:'Crea Tu Fiesta', de:'Erstelle Deine Party'},
+      play :{en:'Play & Go – App Preview', es:'Play & Go – Vista Previa', de:'Play & Go – App-Vorschau'},
+      close:{en:'Close Events – Landing', es:'Eventos CLOSE – Inicio', de:'CLOSE Events – Landing'},
+      ticket:{en:'Submit Business Bots Enquiries', es:'Enviar Consultas Business Bots', de:'Anfragen an Business Bots'}
     };
 
     /* Lista de enlaces */
     const LINKS = [
-      {id:'nfc',    url:'https://heyzine.com/flip-book/66ee880cc0.html'},
-      {id:'real',   url:'https://heyzine.com/admin/view?n=6eb312205325ff383871dbe313eb788b90aeb15f.pdf&adminKey=63163403c1f11d5e#page/1'},
-      {id:'ent',    url:'https://heyzine.com/admin/view?n=8f0c6b352e30a3b70e6677ba17376d19135bdba5.pdf&adminKey=ed75a275d20bfdd1515fcb6cdb7322b6#'},
-      {id:'bubo',   url:'https://heyzine.com/flip-book/5095fe9621.html'},
-      {id:'price',  url:'https://businessbotss.github.io/expressbudget/'},
-      {id:'maint',  url:'https://businessbotss.github.io/booksomemaintinence/'},
-      {id:'barber', url:'https://businessbotss.github.io/bookabarber/'},
-      {id:'party',  url:'https://businessbotss.github.io/createyourparty/'},
-      {id:'play',   url:'https://preview--playngo-connect.lovable.app/'},
-      {id:'close',  url:'https://businessbotss.github.io/close.events/'},
-      {id:'ticket', url:'https://businessbotss.github.io/ticketandfaqs/'}
+      {id:'nfc',   url:'https://heyzine.com/flip-book/66ee880cc0.html'},
+      {id:'real',  url:'https://heyzine.com/admin/view?n=6eb312205325ff383871dbe313eb788b90aeb15f.pdf&adminKey=63163403c1f11d5e#page/1'},
+      {id:'ent',   url:'https://heyzine.com/admin/view?n=8f0c6b352e30a3b70e6677ba17376d19135bdba5.pdf&adminKey=ed75a275d20bfdd1515fcb6cdb7322b6#'},
+      {id:'bubo',  url:'https://heyzine.com/flip-book/5095fe9621.html'},
+      {id:'price', url:'https://businessbotss.github.io/expressbudget/'},
+      {id:'maint', url:'https://businessbotss.github.io/booksomemaintinence/'},
+      {id:'barber',url:'https://businessbotss.github.io/bookabarber/'},
+      {id:'party', url:'https://businessbotss.github.io/createyourparty/'},
+      {id:'play',  url:'https://preview--playngo-connect.lovable.app/'},
+      {id:'close', url:'https://businessbotss.github.io/close.events/'},
+      {id:'ticket',url:'https://businessbotss.github.io/ticketandfaqs/'}
     ];
 
-    const $links = document.querySelector('.links');
-    const $btns  = document.querySelectorAll('.lang-btn');
+    /* Estado */
     let lang = 'en';
+    const $links  = document.querySelector('.links');
+    const $buttons= document.querySelectorAll('.langs button');
 
-    /* Genera los bloques de enlaces según el idioma actual */
-    function render(){  
-      document.documentElement.lang = lang;
-      $links.innerHTML = LINKS.map(l=>
-        `<a href="${l.url}" target="_blank" rel="noopener noreferrer">
-           <div class="link-title">${T[lang][l.id]}</div>
-         </a>`
-      ).join('');
+    /* Renderizar tarjetas */
+    function render(){
+      document.documentElement.lang = lang;        // SEO & accesibilidad
+      $links.innerHTML = LINKS.map(l=>`
+        <a href="${l.url}" target="_blank" rel="noopener noreferrer">
+          <p class="title">${TXT[l.id][lang]}</p>
+        </a>`).join('');
     }
 
-    /* Manejador de clic en botones */
-    $btns.forEach(btn=>{
+    /* Cambiar idioma */
+    $buttons.forEach(btn=>{
       btn.addEventListener('click',()=>{
-        if(btn.dataset.lang===lang) return;        // ya activo
-        $btns.forEach(b=>b.classList.remove('active'));
-        btn.classList.add('active');
+        if(btn.dataset.lang===lang) return;
+        $buttons.forEach(b=>b.classList.toggle('active', b===btn));
         lang = btn.dataset.lang;
         render();
       });
     });
 
-    /* Primera carga */
-    render();
+    render(); // primera carga
   </script>
 </body>
 </html>
