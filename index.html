@@ -3,23 +3,18 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="Business Bots - Access tools and services for NFC profiles, event planning, booking, and more." />
-  <meta name="keywords" content="Business Bots, NFC, booking, events, Play & Go, CLOSE" />
-  <meta name="author" content="Business Bots" />
-  <title>Business Bots – Services</title>
-  <link rel="icon" type="image/png" href="favicon.png" />
+  <meta name="description" content="Business Bots - Links to NFC profiles, booking tools, event platforms, and more." />
+  <meta name="keywords" content="Business Bots, NFC, booking, events, Heyzine" />
+  <title>Business Bots – Links</title>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@100;400&display=swap" rel="stylesheet" />
   <style>
     :root {
       --bg-color: #111;
       --text-color: #fff;
       --block-bg: #1a1a1a;
-      --hover-bg: #555;
+      --hover-bg: #333;
       --accent-color: #007bff;
-    }
-
-    * {
-      box-sizing: border-box;
+      --error-color: #ff4d4d;
     }
 
     body {
@@ -29,9 +24,6 @@
       color: var(--text-color);
       padding: 2rem;
       min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
     }
 
     h1 {
@@ -41,57 +33,35 @@
       text-align: center;
     }
 
-    .controls {
-      display: flex;
-      justify-content: center;
-      gap: 1rem;
-      margin-bottom: 2rem;
-      flex-wrap: wrap;
+    .translate-controls {
+      text-align: center;
+      margin-bottom: 1.5rem;
     }
 
-    .translate-button, .category-button {
-      background-color: #333;
+    .translate-button {
+      background-color: var(--block-bg);
       border: none;
       padding: 0.8rem 1.5rem;
       border-radius: 6px;
       color: var(--text-color);
       font-size: 1rem;
       cursor: pointer;
-      transition: background-color 0.3s;
+      margin: 0 0.5rem;
+      transition: background-color 0.3s, transform 0.1s;
     }
 
-    .translate-button:hover, .category-button:hover {
+    .translate-button:hover {
       background-color: var(--hover-bg);
+      transform: scale(1.05);
     }
 
-    .translate-button:focus, .category-button:focus {
+    .translate-button:focus {
       outline: 2px solid var(--accent-color);
       outline-offset: 2px;
     }
 
-    .search-container {
-      margin: 1rem 0;
-      width: 100%;
-      max-width: 500px;
-    }
-
-    #search-input {
-      width: 100%;
-      padding: 0.8rem;
-      border: none;
-      border-radius: 6px;
-      font-size: 1rem;
-      background-color: #333;
-      color: var(--text-color);
-    }
-
-    #search-input:focus {
-      outline: 2px solid var(--accent-color);
-    }
-
-    .links-container {
-      width: 100%;
-      max-width: 800px;
+    .translate-button.active {
+      background-color: var(--accent-color);
     }
 
     .link-block {
@@ -101,9 +71,7 @@
       margin-bottom: 1.5rem;
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
       transition: transform 0.2s, box-shadow 0.2s;
-      display: flex;
-      align-items: center;
-      gap: 1rem;
+      position: relative;
     }
 
     .link-block:hover {
@@ -111,10 +79,13 @@
       box-shadow: 0 8px 20px rgba(0, 0, 0, 0.8);
     }
 
-    .link-block a {
-      color: inherit;
-      text-decoration: none;
-      flex: 1;
+    .link-block.broken::after {
+      content: '⚠️ Link may be broken';
+      color: var(--error-color);
+      font-size: 0.8rem;
+      position: absolute;
+      top: 0.5rem;
+      right: 0.5rem;
     }
 
     .link-title {
@@ -123,16 +94,17 @@
       margin: 0;
     }
 
-    .link-icon {
-      width: 24px;
-      height: 24px;
-      fill: var(--text-color);
+    a {
+      color: inherit;
+      text-decoration: none;
+      display: block;
     }
 
     .loading, .error {
       text-align: center;
       font-size: 1.2rem;
       margin: 2rem 0;
+      color: var(--error-color);
     }
 
     @media (max-width: 600px) {
@@ -147,39 +119,39 @@
       .link-title {
         font-size: 1.2rem;
       }
+
+      .translate-button {
+        padding: 0.6rem 1rem;
+        font-size: 0.9rem;
+      }
     }
   </style>
 </head>
 <body>
-  <h1>Business Bots – Services</h1>
-  <div class="controls">
-    <button class="translate-button" data-lang="en">English</button>
-    <button class="translate-button" data-lang="es">Español</button>
-    <button class="translate-button" data-lang="de">Deutsch</button>
-    <button class="category-button" data-category="all">All</button>
-    <button class="category-button" data-category="nfc">NFC</button>
-    <button class="category-button" data-category="booking">Booking</button>
-    <button class="category-button" data-category="events">Events</button>
+  <h1>Business Bots – Links</h1>
+  <div class="translate-controls" role="group" aria-label="Language selection">
+    <button class="translate-button active" data-lang="en" onclick="translate('en')">English</button>
+    <button class="translate-button" data-lang="es" onclick="translate('es')">Español</button>
+    <button class="translate-button" data-lang="de" onclick="translate('de')">Deutsch</button>
   </div>
-  <div class="search-container">
-    <input type="text" id="search-input" placeholder="Search services..." aria-label="Search services" />
+  <div class="links-container" role="list" aria-live="polite">
+    <div class="loading" role="alert">Checking links...</div>
   </div>
-  <div class="links-container" role="list" aria-live="polite"></div>
 
   <script>
     const translations = {
       en: {
-        'perfil nfc elias': 'Perfil NFC Elías',
+        'perfil nfc elias': 'Perfil NFC Elias',
         'real estate agent nfc design': 'Real Estate Agent NFC Design',
         'entertainment nfc design': 'Entertainment NFC Design',
         'bubo images': 'Bubo Images',
         'quick pricing tool': 'Quick Pricing Tool',
-        'book some maintenance': 'Book Maintenance',
+        'book some maintenance': 'Book Some Maintenance',
         'book a barber': 'Book a Barber',
         'create your party': 'Create Your Party',
         'play & go – app preview': 'Play & Go – App Preview',
-        'close events – landing': 'CLOSE Events – Landing',
-        'submit business bots enquires': 'Submit Business Bots Enquiries'
+        'close events – landing': 'Close Events – Landing',
+        'submit business bots enquiries': 'Submit Business Bots Enquiries'
       },
       es: {
         'perfil nfc elias': 'Perfil NFC Elías',
@@ -192,7 +164,7 @@
         'create your party': 'Crea tu Fiesta',
         'play & go – app preview': 'Play & Go – Vista Previa de la App',
         'close events – landing': 'Eventos CLOSE – Página Principal',
-        'submit business bots enquires': 'Enviar Consultas a Business Bots'
+        'submit business bots enquiries': 'Enviar Consultas a Business Bots'
       },
       de: {
         'perfil nfc elias': 'NFC-Profil Elías',
@@ -205,84 +177,78 @@
         'create your party': 'Deine Party erstellen',
         'play & go – app preview': 'Play & Go – App-Vorschau',
         'close events – landing': 'CLOSE Events – Landingpage',
-        'submit business bots enquires': 'Anfragen an Business Bots senden'
+        'submit business bots enquiries': 'Anfragen an Business Bots senden'
       }
     };
 
-    let linksData = [];
-    let currentLang = 'en';
-    let currentCategory = 'all';
+    const links = [
+      { title: 'Perfil NFC Elias', url: 'https://heyzine.com/flip-book/66ee880cc0.html' },
+      { title: 'Real estate agent NFC design', url: 'https://heyzine.com/admin/view?n=6eb312205325ff383871dbe313eb788b90aeb15f.pdf&adminKey=63163403c1f11d5e#page/1' },
+      { title: 'Entertainment NFC design', url: 'https://heyzine.com/admin/view?n=8f0c6b352e30a3b70e6677ba17376d19135bdba5.pdf&adminKey=ed75a275d20bfdd1515fcb6cdb7322b6#' },
+      { title: 'Bubo images', url: 'https://heyzine.com/flip-book/5095fe9621.html' },
+      { title: 'Quick pricing tool', url: 'https://businessbotss.github.io/expressbudget/' },
+      { title: 'Book some maintenance', url: 'https://businessbotss.github.io/booksomemaintinence/' },
+      { title: 'Book a barber', url: 'https://businessbotss.github.io/bookabarber/' },
+      { title: 'Create your party', url: 'https://businessbotss.github.io/createyourparty/' },
+      { title: 'Play & go – app preview', url: 'https://preview--playngo-connect.lovable.app/' },
+      { title: 'Close events – landing', url: 'https://businessbotss.github.io/close.events/' },
+      { title: 'Submit business bots enquiries', url: 'https://businessbotss.github.io/ticketandfaqs/' }
+    ];
 
-    async function fetchLinks() {
+    let currentLang = 'en';
+
+    async function checkLink(url) {
       try {
-        const response = await fetch('links.json');
-        if (!response.ok) throw new Error('Failed to load links');
-        linksData = await response.json();
-        renderLinks();
-      } catch (error) {
-        document.querySelector('.links-container').innerHTML = `<div class="error" role="alert">Error loading links: ${error.message}</div>`;
+        const response = await fetch(url, { method: 'HEAD', mode: 'no-cors' });
+        return true; // No-cors mode doesn't guarantee status, so assume reachable
+      } catch {
+        return false;
       }
     }
 
-    function renderLinks() {
+    function translate(lang) {
+      currentLang = lang;
+      const buttons = document.querySelectorAll('.translate-button');
+      buttons.forEach(btn => btn.classList.toggle('active', btn.dataset.lang === lang));
+
+      const container = document.querySelector('.links-container');
+      const linkTitles = container.querySelectorAll('.link-title');
+      linkTitles.forEach(el => {
+        const key = el.dataset.key.toLowerCase();
+        const translatedText = translations[lang][key] || el.dataset.original;
+        el.textContent = translatedText;
+      });
+    }
+
+    async function renderLinks() {
       const container = document.querySelector('.links-container');
       container.innerHTML = '';
-      const filteredLinks = linksData
-        .filter(link => currentCategory === 'all' || link.category === currentCategory)
-        .filter(link => link.title.toLowerCase().includes(document.querySelector('#search-input').value.toLowerCase()));
 
-      if (filteredLinks.length === 0) {
-        container.innerHTML = '<div class="error" role="alert">No services found.</div>';
-        return;
-      }
-
-      filteredLinks.forEach(link => {
-        const block = document.createElement('div');
-        block.className = 'link-block';
-        block.setAttribute('role', 'listitem');
+      for (const link of links) {
+        const isReachable = await checkLink(link.url);
+        const block = document.createElement('a');
+        block.href = link.url;
+        block.target = '_blank';
+        block.rel = 'noopener noreferrer';
         block.innerHTML = `
-          <svg class="link-icon" aria-hidden="true">${getIcon(link.category)}</svg>
-          <a href="${link.url}" target="_blank" rel="noopener noreferrer" onclick="trackClick('${link.title}')">
-            <div class="link-title">${translations[currentLang][link.title.toLowerCase()] || link.title}</div>
-          </a>
+          <div class="link-block ${isReachable ? '' : 'broken'}" role="listitem">
+            <div class="link-title" data-key="${link.title.toLowerCase()}" data-original="${link.title}">
+              ${translations[currentLang][link.title.toLowerCase()] || link.title}
+            </div>
+          </div>
         `;
         container.appendChild(block);
-      });
+      }
     }
-
-    function getIcon(category) {
-      const icons = {
-        nfc: '<path d="M12 2a10 10 0 00-10 10 10 10 0 0010 10 10 10 0 0010-10A10 10 0 0012 2zm0 18a8 8 0 01-8-8 8 8 0 018-8 8 8 0 018 8 8 8 0 01-8 8zm-2-12v8h4V8h-4z"/>',
-        booking: '<path d="M19 3h-1V1h-2v2H8V1H6v2H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2V5a2 2 0 00-2-2zm0 16H5V8h14v11z"/>',
-        events: '<path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm-1-13h2v6h4v2h-6V7z"/>'
-      };
-      return `<svg viewBox="0 0 24 24">${icons[category] || icons.nfc}</svg>`;
-    }
-
-    function trackClick(title) {
-      // Placeholder for analytics (e.g., Google Analytics)
-      console.log(`Clicked: ${title}`);
-    }
-
-    document.querySelectorAll('.translate-button').forEach(button => {
-      button.addEventListener('click', () => {
-        currentLang = button.dataset.lang;
-        renderLinks();
-      });
-    });
-
-    document.querySelectorAll('.category-button').forEach(button => {
-      button.addEventListener('click', () => {
-        currentCategory = button.dataset.category;
-        renderLinks();
-      });
-    });
-
-    document.querySelector('#search-input').addEventListener('input', renderLinks);
 
     // Initialize
-    document.querySelector('.links-container').innerHTML = '<div class="loading" role="alert">Loading services...</div>';
-    fetchLinks();
+    document.querySelector('.translate-button[data-lang="en"]').classList.add('active');
+    renderLinks().catch(() => {
+      document.querySelector('.links-container').innerHTML = '<div class="error" role="alert">Failed to load links.</div>';
+    });
+
+    // Ensure initial translation
+    translate('en');
   </script>
 </body>
 </html>
