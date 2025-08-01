@@ -151,7 +151,7 @@
         'create your party': 'Create Your Party',
         'play & go – app preview': 'Play & Go – App Preview',
         'close events – landing': 'Close Events – Landing',
-        'submit business bots enquires': 'Submit Business Bots Enquiries'
+        'submit business bots enquiries': 'Submit Business Bots Enquiries'
       },
       es: {
         'perfil nfc elias': 'Perfil NFC Elías',
@@ -164,7 +164,7 @@
         'create your party': 'Crea tu Fiesta',
         'play & go – app preview': 'Play & Go – Vista Previa de la App',
         'close events – landing': 'Eventos CLOSE – Página Principal',
-        'submit business bots enquires': 'Enviar Consultas a Business Bots'
+        'submit business bots enquiries': 'Enviar Consultas a Business Bots'
       },
       de: {
         'perfil nfc elias': 'NFC-Profil Elías',
@@ -177,7 +177,7 @@
         'create your party': 'Deine Party erstellen',
         'play & go – app preview': 'Play & Go – App-Vorschau',
         'close events – landing': 'CLOSE Events – Landingpage',
-        'submit business bots enquires': 'Anfragen an Business Bots senden'
+        'submit business bots enquiries': 'Anfragen an Business Bots senden'
       }
     };
 
@@ -192,7 +192,7 @@
       { title: 'Create your party', url: 'https://businessbotss.github.io/createyourparty/' },
       { title: 'Play & go – app preview', url: 'https://preview--playngo-connect.lovable.app/' },
       { title: 'Close events – landing', url: 'https://businessbotss.github.io/close.events/' },
-      { title: 'Submit business bots enquires', url: 'https://businessbotss.github.io/ticketandfaqs/' }
+      { title: 'Submit business bots enquiries', url: 'https://businessbotss.github.io/ticketandfaqs/' }
     ];
 
     let currentLang = 'en';
@@ -212,9 +212,11 @@
       buttons.forEach(btn => btn.classList.toggle('active', btn.dataset.lang === lang));
 
       const container = document.querySelector('.links-container');
-      container.querySelectorAll('.link-title').forEach(el => {
+      const linkTitles = container.querySelectorAll('.link-title');
+      linkTitles.forEach(el => {
         const key = el.dataset.key.toLowerCase();
-        el.textContent = translations[lang][key] || el.dataset.original;
+        const translatedText = translations[lang][key] || el.dataset.original;
+        el.textContent = translatedText;
       });
     }
 
@@ -230,7 +232,7 @@
         block.rel = 'noopener noreferrer';
         block.innerHTML = `
           <div class="link-block ${isReachable ? '' : 'broken'}" role="listitem">
-            <div class="link-title" data-key="${link.title}" data-original="${link.title}">
+            <div class="link-title" data-key="${link.title.toLowerCase()}" data-original="${link.title}">
               ${translations[currentLang][link.title.toLowerCase()] || link.title}
             </div>
           </div>
@@ -244,6 +246,9 @@
     renderLinks().catch(() => {
       document.querySelector('.links-container').innerHTML = '<div class="error" role="alert">Failed to load links.</div>';
     });
+
+    // Ensure initial translation
+    translate('en');
   </script>
 </body>
 </html>
