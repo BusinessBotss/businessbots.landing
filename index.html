@@ -199,8 +199,9 @@
 
     async function checkLink(url) {
       try {
+        // Intentamos hacer HEAD request, pero no siempre permitido (CORS)
         const response = await fetch(url, { method: 'HEAD', mode: 'no-cors' });
-        return true; // No-cors mode doesn't guarantee status, so assume reachable
+        return true; // En modo no-cors no se garantiza estado, asumimos alcanzable
       } catch {
         return false;
       }
@@ -208,9 +209,15 @@
 
     function translate(lang) {
       currentLang = lang;
+
+      // Actualiza botones activos
       const buttons = document.querySelectorAll('.translate-button');
       buttons.forEach(btn => btn.classList.toggle('active', btn.dataset.lang === lang));
 
+      // Cambia atributo lang del HTML para accesibilidad y SEO
+      document.documentElement.lang = lang;
+
+      // Actualiza textos en los títulos
       const container = document.querySelector('.links-container');
       const linkTitles = container.querySelectorAll('.link-title');
       linkTitles.forEach(el => {
@@ -241,13 +248,13 @@
       }
     }
 
-    // Initialize
+    // Inicialización
     document.querySelector('.translate-button[data-lang="en"]').classList.add('active');
     renderLinks().catch(() => {
       document.querySelector('.links-container').innerHTML = '<div class="error" role="alert">Failed to load links.</div>';
     });
 
-    // Ensure initial translation
+    // Asegurar traducción inicial correcta
     translate('en');
   </script>
 </body>
