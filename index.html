@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="description" content="Business Bots - Links to NFC profiles, booking tools, event platforms, and more." />
   <meta name="keywords" content="Business Bots, NFC, booking, events, Heyzine" />
   <title>Business Bots – Links</title>
@@ -16,7 +16,6 @@
       --accent-color: #007bff;
       --error-color: #ff4d4d;
     }
-
     body {
       margin: 0;
       font-family: 'Montserrat', sans-serif;
@@ -25,19 +24,16 @@
       padding: 2rem;
       min-height: 100vh;
     }
-
     h1 {
       font-weight: 100;
       font-size: 2.2rem;
       margin-bottom: 1.5rem;
       text-align: center;
     }
-
     .translate-controls {
       text-align: center;
       margin-bottom: 1.5rem;
     }
-
     .translate-button {
       background-color: var(--block-bg);
       border: none;
@@ -49,21 +45,18 @@
       margin: 0 0.5rem;
       transition: background-color 0.3s, transform 0.1s;
     }
-
     .translate-button:hover {
       background-color: var(--hover-bg);
       transform: scale(1.05);
     }
-
     .translate-button:focus {
       outline: 2px solid var(--accent-color);
       outline-offset: 2px;
     }
-
     .translate-button.active {
       background-color: var(--accent-color);
+      color: #fff;
     }
-
     .link-block {
       background-color: var(--block-bg);
       border-radius: 10px;
@@ -73,12 +66,10 @@
       transition: transform 0.2s, box-shadow 0.2s;
       position: relative;
     }
-
     .link-block:hover {
       transform: translateY(-3px);
       box-shadow: 0 8px 20px rgba(0, 0, 0, 0.8);
     }
-
     .link-block.broken::after {
       content: '⚠️ Link may be broken';
       color: var(--error-color);
@@ -87,39 +78,32 @@
       top: 0.5rem;
       right: 0.5rem;
     }
-
     .link-title {
       font-weight: 400;
       font-size: 1.4rem;
       margin: 0;
     }
-
     a {
       color: inherit;
       text-decoration: none;
       display: block;
     }
-
     .loading, .error {
       text-align: center;
       font-size: 1.2rem;
       margin: 2rem 0;
       color: var(--error-color);
     }
-
     @media (max-width: 600px) {
       body {
         padding: 1rem;
       }
-
       h1 {
         font-size: 1.8rem;
       }
-
       .link-title {
         font-size: 1.2rem;
       }
-
       .translate-button {
         padding: 0.6rem 1rem;
         font-size: 0.9rem;
@@ -199,48 +183,30 @@
 
     async function checkLink(url) {
       try {
-        // Intentamos hacer HEAD request, pero no siempre permitido (CORS)
-        const response = await fetch(url, { method: 'HEAD', mode: 'no-cors' });
-        return true; // En modo no-cors no se garantiza estado, asumimos alcanzable
+        // HEAD request, mode no-cors puede que no funcione en todos los dominios
+        await fetch(url, { method: 'HEAD', mode: 'no-cors' });
+        return true;
       } catch {
         return false;
       }
     }
 
-    function translate(lang) {
-      currentLang = lang;
-
-      // Actualiza botones activos
-      const buttons = document.querySelectorAll('.translate-button');
-      buttons.forEach(btn => btn.classList.toggle('active', btn.dataset.lang === lang));
-
-      // Cambia atributo lang del HTML para accesibilidad y SEO
-      document.documentElement.lang = lang;
-
-      // Actualiza textos en los títulos
-      const container = document.querySelector('.links-container');
-      const linkTitles = container.querySelectorAll('.link-title');
-      linkTitles.forEach(el => {
-        const key = el.dataset.key.toLowerCase();
-        const translatedText = translations[lang][key] || el.dataset.original;
-        el.textContent = translatedText;
-      });
-    }
-
-    async function renderLinks() {
+    async function renderLinks(lang = currentLang) {
       const container = document.querySelector('.links-container');
       container.innerHTML = '';
 
       for (const link of links) {
         const isReachable = await checkLink(link.url);
+        const titleKey = link.title.toLowerCase();
+        const titleText = translations[lang][titleKey] || link.title;
         const block = document.createElement('a');
         block.href = link.url;
         block.target = '_blank';
         block.rel = 'noopener noreferrer';
         block.innerHTML = `
           <div class="link-block ${isReachable ? '' : 'broken'}" role="listitem">
-            <div class="link-title" data-key="${link.title.toLowerCase()}" data-original="${link.title}">
-              ${translations[currentLang][link.title.toLowerCase()] || link.title}
+            <div class="link-title" data-key="${titleKey}" data-original="${link.title}">
+              ${titleText}
             </div>
           </div>
         `;
@@ -248,14 +214,24 @@
       }
     }
 
-    // Inicialización
-    document.querySelector('.translate-button[data-lang="en"]').classList.add('active');
-    renderLinks().catch(() => {
+    async function translate(lang) {
+      console.log("Translate to:", lang); // para debug
+      currentLang = lang;
+      document.documentElement.lang = lang;
+
+      // Actualizar botones
+      document.querySelectorAll('.translate-button').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.lang === lang);
+      });
+
+      // Renderizar links con el nuevo idioma
+      await renderLinks(lang);
+    }
+
+    // Inicializar en inglés y renderizar links
+    translate('en').catch(() => {
       document.querySelector('.links-container').innerHTML = '<div class="error" role="alert">Failed to load links.</div>';
     });
-
-    // Asegurar traducción inicial correcta
-    translate('en');
   </script>
 </body>
 </html>
